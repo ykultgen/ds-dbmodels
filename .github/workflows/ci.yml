@@ -61,7 +61,7 @@ jobs:
       run: dbdocs remove enterprise-data-model-${{ github.event.pull_request.number }}
 
 
-  deploy-conformed-layer:
+  deploy-enterprise-data-model:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
