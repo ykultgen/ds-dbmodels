@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-enterprise-data-model:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed' && github.event.pull_request.merged != true
     runs-on: ubuntu-latest
     env:
       PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -59,6 +59,8 @@ jobs:
       run: dbdocs
 
     - name: Remove the project
+      env:
+        DBDOCS_TOKEN: ${{ secrets.DS_DBDOCS_TOKEN }}
       run: dbdocs remove enterprise-data-model-${{ github.event.pull_request.number }}
 
 
