@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+    branches: [ main ]
+
+jobs:
+  build-enterprise-data-model:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dbdocs
+      run: sudo npm install -g dbdocs
+
+    - name: Check dbdocs
+      run: dbdocs
+
+    - name: build dbdocs project for PR review
+      env:
+        DBDOCS_TOKEN: ${{ secrets.DS_DBDOCS_TOKEN }}
+      run: |
+        dbdocs build models/enterprise-data-model.dbml --project=enterprise-data-model-$PR_NUMBER
+
+    - name: posted dbdoc project link for PR review
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: dbdoc pr#$PR_NUMBER preview: https://dbdocs.io/ykultgen/enterprise-data-model-$PR_NUMBER
+          })  
+
+  remove-dbdocs-project:
+    if: github.event.action == 'closed' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dbdocs
+      run: sudo npm install -g dbdocs
+
+    - name: Check dbdocs
+      run: dbdocs
+
+    - name: Remove the project
+      run: dbdocs remove enterprise-data-model-${{ github.event.pull_request.number }}
+
+
+  deploy-conformed-layer:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dbdocs
+      run: sudo npm install -g dbdocs
+
+    - name: Check dbdocs
+      run: dbdocs
+
+    - name: Update dbdocs project
+      env:
+        DBDOCS_TOKEN: ${{ secrets.DS_DBDOCS_TOKEN }}
+      run: dbdocs build models/enterprise-data-model.dbml

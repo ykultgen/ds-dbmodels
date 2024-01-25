@@ -1,0 +1,47 @@
+Project enterprise_data_model {
+  database_type: 'Snowflake'
+  Note: '''
+    # Enterprise Data Model
+    This data model is for the CNB Enterprise Data Warehouse. It is a manifestation of the conceptual diagram in logical and physical form.
+    It is intended to represent the that is essential for CNB's continuing operation with a focus on Analytics and BI.
+
+    ## Contributors
+    * Brent Shreve (bshreve@careernowbrands.com)
+  '''
+}
+
+// Use DBML to define the model
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table company {
+  company_id varchar [pk, unique, note: 'A unique identifier for each company']
+  company_name varchar [not null, note: 'The name of the company.']
+  company_type varchar [not null, note: 'This field indicates the type of the company, such as "Agency" or other types you might have.']
+  source_id varchar [not null, note: 'Refers to the source_id column in the source table.']
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  modified_at timestamp [default: 'CURRENT_TIMESTAMP']
+
+  Note: 'This will store the basic information about each company.'
+}
+
+Table company_relationship {
+  relationship_id varchar [pk, unique, note: 'A unique identifier for each relationship.']
+  parent_company_id varchar [not null, note: 'Refers to the company_id in the Companies table for the parent company.']
+  child_company_id varchar [not null, note: 'Refers to the company_id in the Companies table for the child company.']
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  modified_at timestamp [default: 'CURRENT_TIMESTAMP']
+
+  Note: 'To establish the parent-child relationship between companies.'
+}
+
+Table source {
+  source_id varchar [pk, unique, note: 'A unique identifier for each data source.']
+  source_name varchar [not null, note: 'The name of the system or source (e.g., CRM system, ERP system, manual entry, etc.).']
+  source_description varchar [not null, note: 'A brief description of the source.']
+
+  Note: 'This table will store information about the various systems or sources from which data is captured.'
+}
+
+Ref: company.company_id < company_relationship.parent_company_id // one-to-many
+Ref: company.company_id < company_relationship.child_company_id // one-to-many
+Ref: company.source_id > source.source_id // many-to-one
