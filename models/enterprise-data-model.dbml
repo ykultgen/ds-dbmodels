@@ -21,7 +21,7 @@ Table company {
   created_at timestamp [default: 'CURRENT_TIMESTAMP']
   modified_at timestamp [default: 'CURRENT_TIMESTAMP']
 
-  Note: 'This will store the basic information about each company.'
+  Note: 'This will store the basic information about each company. 123'
 }
 
 Table company_relationship {
