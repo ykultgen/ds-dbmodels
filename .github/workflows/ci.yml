@@ -41,7 +41,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: dbdoc pr#$PR_NUMBER preview: https://dbdocs.io/ykultgen/enterprise-data-model-$PR_NUMBER
+            body: "dbdoc pr#"$PR_NUMBER "preview: https://dbdocs.io/ykultgen/enterprise-data-model-$PR_NUMBER
           })  
 
   remove-dbdocs-project:
