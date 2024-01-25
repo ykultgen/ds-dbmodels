@@ -37,7 +37,7 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
-          const output = `dbdoc pr #\`$PR_NUMBER\` preview: https://dbdocs.io/ykultgen/enterprise-data-model-\`$PR_NUMBER\``
+          const output = `dbdoc pr #\`${{ env.PR_NUMBER}}\` preview: https://dbdocs.io/ykultgen/enterprise-data-model-\`${{ env.PR_NUMBER}}\``
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
